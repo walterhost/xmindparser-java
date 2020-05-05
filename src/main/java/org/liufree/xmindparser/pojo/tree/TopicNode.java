@@ -7,6 +7,7 @@ import org.liufree.xmindparser.pojo.Children;
 import org.liufree.xmindparser.pojo.Comments;
 import org.liufree.xmindparser.pojo.Notes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,7 +23,7 @@ public class TopicNode {
     private String title;
     private Notes notes;
     private List<Comments> comments;
-    private List<TopicNode> subElements;
+    private List<TopicNode> subElements = new ArrayList<>();
     private String parentId="0";
 
 
