@@ -11,6 +11,7 @@ import org.liufree.xmindparser.pojo.tree.XmindCanvas;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author liufree liufreeo@gmail.com
@@ -22,6 +23,7 @@ public class XmindParser {
     public static final String xmindZenJson = "content.json";
     public static final String xmindLegacyContent = "content.xml";
     public static final String xmindLegacyComments = "comments.xml";
+    public static final int MAX_LEVEL = 3;
 
     /**
      * 解析脑图文件，返回content整合后的内容
@@ -62,12 +64,12 @@ public class XmindParser {
         topicNode.setId(canvas.getRootTopic().getId());
         topicNode.setNotes(canvas.getRootTopic().getNotes());
         topicNode.setTitle(canvas.getRootTopic().getTitle());
-        topicNode.setChildren(getChildTopicNodes(canvas.getRootTopic().getChildren().getAttached()));
+        topicNode.setChildren(getChildTopicNodes(canvas.getRootTopic().getChildren().getAttached(),topicNode.getId()));
         xmindCanvas.setTopicNode(topicNode);
         return xmindCanvas;
     }
 
-    public static List<TopicNode> getChildTopicNodes(List<Attached> list) {
+    public static List<TopicNode> getChildTopicNodes(List<Attached> list,String parentId) {
 
         if (list == null && list.size() == 0) {
             return new LinkedList<>();
@@ -80,11 +82,51 @@ public class XmindParser {
                 topicNode.setId(attached.getId());
                 topicNode.setNotes(attached.getNotes());
                 topicNode.setTitle(attached.getTitle());
-                topicNode.setChildren(getChildTopicNodes(attached.getChildren().getAttached()));
+                topicNode.setParentId(parentId);
+                topicNode.setChildren(getChildTopicNodes(attached.getChildren().getAttached(),topicNode.getId()));
                 topicNodes.add(topicNode);
             }
         }
         return topicNodes;
+    }
+
+    public static Map<String, List<TopicNode>> groupByParentId(List<TopicNode> sources){
+        Map<String, List<TopicNode>> listGroupby = sources.parallelStream().collect(Collectors.groupingBy(TopicNode::getParentId));
+        return listGroupby;
+    }
+
+    public static   Map<String, List<TopicNode>> start(String id, List<TopicNode> sources){
+        Map<String, List<TopicNode>> parentMap = groupByParentId(sources);
+
+        Map<String, List<TopicNode>> levelMap = new HashMap<>();
+        getLevel(id, parentMap, levelMap, 1);
+        return levelMap;
+    }
+
+    public static void getLevel(String parentId, Map<String, List<TopicNode>> parentMap, Map<String, List<TopicNode>> levelMap, int count){
+        //根据parentId获取节点
+        List<TopicNode> nextLevel = parentMap.get(parentId);
+
+        if(nextLevel==null||nextLevel.size()==0)
+            return;
+
+        String countStr = String.valueOf(count);
+        List<TopicNode> thisLevel = levelMap.get(countStr);
+        if (thisLevel==null||thisLevel.size()==0) {
+            levelMap.put(countStr, nextLevel);
+        } else {
+            thisLevel.addAll(nextLevel);
+            levelMap.put(countStr, thisLevel);
+        }
+
+        count++;
+        if(count > MAX_LEVEL)
+            return;
+
+        for (TopicNode TopicNode : nextLevel) {
+            String tempParentId = TopicNode.getId();
+            getLevel(tempParentId, parentMap, levelMap, count);
+        }
     }
 
     public static Canvas parseCanvas(String xmindFile) throws IOException, ArchiveException, DocumentException {

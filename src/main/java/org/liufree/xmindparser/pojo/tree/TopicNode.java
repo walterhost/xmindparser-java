@@ -23,6 +23,7 @@ public class TopicNode {
     private Notes notes;
     private List<Comments> comments;
     private List<TopicNode> children;
+    private String parentId="0";
 
 
 

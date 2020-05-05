@@ -27,7 +27,11 @@ public class Example {
         Canvas canvas = XmindParser.parseCanvas(fileName);
         //System.out.println(canvas);
         XmindCanvas xmindCanvas = XmindParser.getXmindCanvas(canvas);
-        System.out.printf(JSON.toJSONString(xmindCanvas,true));
+       //System.out.printf(JSON.toJSONString(xmindCanvas,true));
+        System.out.printf("\n\n=========");
+        System.out.printf(JSON.toJSONString(XmindParser.start("2rqnlssbbolniqnjuv4ufkjh11",xmindCanvas.getTopicNode().getChildren()),true));
+
+       // System.out.printf(JSON.toJSONString(XmindParser.groupByParentId(xmindCanvas.getTopicNode().getChildren()),true));
         // Object root = XmindParser.parseObject(fileName);
         //  System.out.println(root);
 
