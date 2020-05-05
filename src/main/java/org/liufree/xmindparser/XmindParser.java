@@ -216,6 +216,11 @@ public class XmindParser {
         return false;
     }
 
+    public static XmindCanvas parseXmindCanvas(String fileName) throws DocumentException, ArchiveException, IOException {
+        Canvas canvas = XmindParser.parseCanvas(fileName);
+        return getXmindCanvas(canvas);
+    }
+
    /* public static void main(String[] args) throws IOException, ArchiveException, DocumentException {
         String fileName = "doc/XmindZen解析.xmind";
         XmindParser xmindParser = new XmindParser();
