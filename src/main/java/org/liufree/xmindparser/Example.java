@@ -1,9 +1,7 @@
 package org.liufree.xmindparser;
 
-import com.alibaba.fastjson.JSON;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.dom4j.DocumentException;
-import org.liufree.xmindparser.pojo.JsonRootBean;
 
 import java.io.IOException;
 
@@ -22,7 +20,7 @@ public class Example {
         System.out.println(res);
 
         Object root = XmindParser.parseObject(fileName);
-        System.out.println(root);
+      //  System.out.println(root);
 
 
 

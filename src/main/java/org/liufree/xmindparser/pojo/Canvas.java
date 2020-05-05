@@ -11,7 +11,7 @@ import lombok.Data;
  * @website http://www.bejson.com/java2pojo/
  */
 @Data
-public class JsonRootBean {
+public class Canvas {
 
     private String id;
     private String title;

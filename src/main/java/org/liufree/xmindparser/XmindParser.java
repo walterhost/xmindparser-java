@@ -3,8 +3,7 @@ package org.liufree.xmindparser;
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.dom4j.DocumentException;
-import org.json.JSONObject;
-import org.liufree.xmindparser.pojo.JsonRootBean;
+import org.liufree.xmindparser.pojo.Canvas;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,14 +45,14 @@ public class XmindParser {
         if (flag) {
             // do something
         }
-        JsonRootBean jsonRootBean = JSON.parseObject(content, JsonRootBean.class);
-       return(JSON.toJSONString(jsonRootBean,false));
+        Canvas canvas = JSON.parseObject(content, Canvas.class);
+       return(JSON.toJSONString(canvas,false));
     }
 
     public static Object parseObject(String xmindFile) throws DocumentException, ArchiveException, IOException {
         String content = parseJson(xmindFile);
-        JsonRootBean jsonRootBean = JSON.parseObject(content, JsonRootBean.class);
-        return jsonRootBean;
+        Canvas canvas = JSON.parseObject(content, Canvas.class);
+        return canvas;
     }
 
 
