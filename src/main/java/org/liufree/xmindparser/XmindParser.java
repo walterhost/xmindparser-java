@@ -1,6 +1,7 @@
 package org.liufree.xmindparser;
 
 import com.alibaba.fastjson.JSON;
+import com.sun.deploy.util.StringUtils;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.dom4j.DocumentException;
 import org.liufree.xmindparser.pojo.Attached;
@@ -51,51 +52,61 @@ public class XmindParser {
             // do something
         }
         Canvas canvas = JSON.parseObject(content, Canvas.class);
-       return(JSON.toJSONString(canvas,false));
+        return (JSON.toJSONString(canvas, false));
     }
 
     public static XmindCanvas getXmindCanvas(Canvas canvas) {
         XmindCanvas xmindCanvas = new XmindCanvas();
         xmindCanvas.setId(canvas.getId());
         xmindCanvas.setTitle(canvas.getTitle());
+        List<TopicNode> result = new ArrayList<>();
 
         TopicNode topicNode = new TopicNode();
         topicNode.setComments(canvas.getRootTopic().getComments());
         topicNode.setId(canvas.getRootTopic().getId());
         topicNode.setNotes(canvas.getRootTopic().getNotes());
         topicNode.setTitle(canvas.getRootTopic().getTitle());
-        topicNode.setChildren(getChildTopicNodes(canvas.getRootTopic().getChildren().getAttached(),topicNode.getId()));
-        xmindCanvas.setTopicNode(topicNode);
+
+        List<TopicNode> topicNodeArrayList = new ArrayList<>();
+        result.add(topicNode);
+
+        List<Attached> list = canvas.getRootTopic().getChildren().getAttached();
+        if (list != null && list.size() > 0) {
+            topicNodeArrayList = getChildTopicNodes(list, topicNode.getId());
+            topicNode.setChildren(topicNodeArrayList);
+        }
+        result.addAll(topicNodeArrayList);
+        xmindCanvas.setTopicNodes(result);
         return xmindCanvas;
     }
 
-    public static List<TopicNode> getChildTopicNodes(List<Attached> list,String parentId) {
+    public static List<TopicNode> getChildTopicNodes(List<Attached> list, String parentId) {
 
         if (list == null && list.size() == 0) {
-            return new LinkedList<>();
+            return new ArrayList<>();
         }
-        List<TopicNode> topicNodes = new LinkedList<>();
+        List<TopicNode> topicNodes = new ArrayList<>();
         for (Attached attached : list) {
-            if (attached.getChildren()!=null&&attached.getChildren().getAttached().size() > 0) {
+            if (attached.getChildren() != null && attached.getChildren().getAttached().size() > 0) {
                 TopicNode topicNode = new TopicNode();
                 topicNode.setComments(attached.getComments());
                 topicNode.setId(attached.getId());
                 topicNode.setNotes(attached.getNotes());
                 topicNode.setTitle(attached.getTitle());
                 topicNode.setParentId(parentId);
-                topicNode.setChildren(getChildTopicNodes(attached.getChildren().getAttached(),topicNode.getId()));
+                topicNode.setChildren(getChildTopicNodes(attached.getChildren().getAttached(), topicNode.getId()));
                 topicNodes.add(topicNode);
             }
         }
         return topicNodes;
     }
 
-    public static Map<String, List<TopicNode>> groupByParentId(List<TopicNode> sources){
+    public static Map<String, List<TopicNode>> groupByParentId(List<TopicNode> sources) {
         Map<String, List<TopicNode>> listGroupby = sources.parallelStream().collect(Collectors.groupingBy(TopicNode::getParentId));
         return listGroupby;
     }
 
-    public static   Map<String, List<TopicNode>> start(String id, List<TopicNode> sources){
+    public static Map<String, List<TopicNode>> start(String id, List<TopicNode> sources) {
         Map<String, List<TopicNode>> parentMap = groupByParentId(sources);
 
         Map<String, List<TopicNode>> levelMap = new HashMap<>();
@@ -103,16 +114,16 @@ public class XmindParser {
         return levelMap;
     }
 
-    public static void getLevel(String parentId, Map<String, List<TopicNode>> parentMap, Map<String, List<TopicNode>> levelMap, int count){
+    public static void getLevel(String parentId, Map<String, List<TopicNode>> parentMap, Map<String, List<TopicNode>> levelMap, int count) {
         //根据parentId获取节点
         List<TopicNode> nextLevel = parentMap.get(parentId);
 
-        if(nextLevel==null||nextLevel.size()==0)
+        if (nextLevel == null || nextLevel.size() == 0)
             return;
 
         String countStr = String.valueOf(count);
         List<TopicNode> thisLevel = levelMap.get(countStr);
-        if (thisLevel==null||thisLevel.size()==0) {
+        if (thisLevel == null || thisLevel.size() == 0) {
             levelMap.put(countStr, nextLevel);
         } else {
             thisLevel.addAll(nextLevel);
@@ -120,7 +131,7 @@ public class XmindParser {
         }
 
         count++;
-        if(count > MAX_LEVEL)
+        if (count > MAX_LEVEL)
             return;
 
         for (TopicNode TopicNode : nextLevel) {
@@ -146,7 +157,7 @@ public class XmindParser {
             // do something
         }
         Canvas canvas = JSON.parseObject(content, Canvas.class);
-       return canvas;
+        return canvas;
     }
 
     public static Object parseObject(String xmindFile) throws DocumentException, ArchiveException, IOException {
@@ -176,7 +187,7 @@ public class XmindParser {
      * @return
      */
     public static String getXmindZenContent(String xmindFile) throws IOException, ArchiveException {
-        List<String> keys = new LinkedList<>();
+        List<String> keys = new ArrayList<>();
         keys.add(xmindZenJson);
         Map<String, String> map = ZipUtils.getContents(keys, xmindFile);
         String content = map.get(xmindZenJson);
@@ -189,7 +200,7 @@ public class XmindParser {
      * @return
      */
     public static String getXmindLegacyContent(String xmindFile) throws IOException, ArchiveException, DocumentException {
-        List<String> keys = new LinkedList<>();
+        List<String> keys = new ArrayList<>();
         keys.add(xmindLegacyContent);
         keys.add(xmindLegacyComments);
         Map<String, String> map = ZipUtils.getContents(keys, xmindFile);

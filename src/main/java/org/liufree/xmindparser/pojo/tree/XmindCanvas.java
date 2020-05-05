@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.ToString;
 import org.liufree.xmindparser.pojo.RootTopic;
 
+import java.util.List;
+
 /**
  * Auto-generated: 2020-03-24 11:24:27
  *
@@ -18,6 +20,6 @@ public class XmindCanvas {
 
     private String id;
     private String title;
-    private TopicNode topicNode;
+    private List<TopicNode> topicNodes;
 
 }
