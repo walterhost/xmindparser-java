@@ -72,7 +72,7 @@ public class XmindParser {
         List<Attached> list = canvas.getRootTopic().getChildren().getAttached();
         if (list != null && list.size() > 0) {
             topicNodeArrayList = getChildTopicNodes(list, topicNode.getId());
-            topicNode.setChildren(topicNodeArrayList);
+            topicNode.setSubElements(topicNodeArrayList);
         }
         result.addAll(topicNodeArrayList);
         xmindCanvas.setTopicNodes(result);
@@ -93,7 +93,7 @@ public class XmindParser {
                 topicNode.setNotes(attached.getNotes());
                 topicNode.setTitle(attached.getTitle());
                 topicNode.setParentId(parentId);
-                topicNode.setChildren(getChildTopicNodes(attached.getChildren().getAttached(), topicNode.getId()));
+                topicNode.setSubElements(getChildTopicNodes(attached.getChildren().getAttached(), topicNode.getId()));
                 topicNodes.add(topicNode);
             }
         }

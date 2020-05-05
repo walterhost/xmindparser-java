@@ -22,7 +22,7 @@ public class TopicNode {
     private String title;
     private Notes notes;
     private List<Comments> comments;
-    private List<TopicNode> children;
+    private List<TopicNode> subElements;
     private String parentId="0";
 
 
