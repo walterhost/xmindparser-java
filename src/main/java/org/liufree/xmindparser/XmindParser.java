@@ -49,6 +49,26 @@ public class XmindParser {
        return(JSON.toJSONString(canvas,false));
     }
 
+    public static Canvas parseCanvas(String xmindFile) throws IOException, ArchiveException, DocumentException {
+        String res = ZipUtils.extract(xmindFile);
+
+        String content = null;
+        if (isXmindZen(res, xmindFile)) {
+            content = getXmindZenContent(xmindFile);
+        } else {
+            content = getXmindLegacyContent(xmindFile);
+        }
+
+        //删除生成的文件夹
+        File dir = new File(res);
+        boolean flag = deleteDir(dir);
+        if (flag) {
+            // do something
+        }
+        Canvas canvas = JSON.parseObject(content, Canvas.class);
+       return canvas;
+    }
+
     public static Object parseObject(String xmindFile) throws DocumentException, ArchiveException, IOException {
         String content = parseJson(xmindFile);
         Canvas canvas = JSON.parseObject(content, Canvas.class);
