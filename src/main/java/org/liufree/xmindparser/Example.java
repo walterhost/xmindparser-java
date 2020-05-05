@@ -1,9 +1,16 @@
 package org.liufree.xmindparser;
 
+import com.alibaba.fastjson.JSON;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.dom4j.DocumentException;
+import org.liufree.xmindparser.pojo.Attached;
+import org.liufree.xmindparser.pojo.Canvas;
+import org.liufree.xmindparser.pojo.tree.TopicNode;
+import org.liufree.xmindparser.pojo.tree.XmindCanvas;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author liufree liufreeo@gmail.com
@@ -14,17 +21,17 @@ import java.io.IOException;
 public class Example {
 
     public static void main(String[] args) throws DocumentException, ArchiveException, IOException {
-       // String fileName = "doc/XmindZen解析.xmind";
-        String fileName = "doc/Xmind8解析.xmind";
+        String fileName = "doc/XmindZen解析.xmind";
+        //   String fileName = "doc/Xmind8解析.xmind";
         String res = XmindParser.parseJson(fileName);
-        System.out.println(res);
-
-        Object root = XmindParser.parseObject(fileName);
-      //  System.out.println(root);
-
+        Canvas canvas = XmindParser.parseCanvas(fileName);
+        //System.out.println(canvas);
+        XmindCanvas xmindCanvas = XmindParser.getXmindCanvas(canvas);
+        System.out.printf(JSON.toJSONString(xmindCanvas,true));
+        // Object root = XmindParser.parseObject(fileName);
+        //  System.out.println(root);
 
 
     }
-
 
 }

@@ -1,9 +1,10 @@
 /**
   * Copyright 2020 bejson.com 
   */
-package org.liufree.xmindparser.pojo;
+package org.liufree.xmindparser.pojo.tree;
 import lombok.Data;
 import lombok.ToString;
+import org.liufree.xmindparser.pojo.RootTopic;
 
 /**
  * Auto-generated: 2020-03-24 11:24:27
@@ -13,10 +14,10 @@ import lombok.ToString;
  */
 @Data
 @ToString
-public class Canvas  {
+public class XmindCanvas {
 
     private String id;
     private String title;
-    private RootTopic rootTopic;
+    private TopicNode topicNode;
 
 }

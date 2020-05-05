@@ -3,7 +3,10 @@ package org.liufree.xmindparser;
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.dom4j.DocumentException;
+import org.liufree.xmindparser.pojo.Attached;
 import org.liufree.xmindparser.pojo.Canvas;
+import org.liufree.xmindparser.pojo.tree.TopicNode;
+import org.liufree.xmindparser.pojo.tree.XmindCanvas;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,6 +50,41 @@ public class XmindParser {
         }
         Canvas canvas = JSON.parseObject(content, Canvas.class);
        return(JSON.toJSONString(canvas,false));
+    }
+
+    public static XmindCanvas getXmindCanvas(Canvas canvas) {
+        XmindCanvas xmindCanvas = new XmindCanvas();
+        xmindCanvas.setId(canvas.getId());
+        xmindCanvas.setTitle(canvas.getTitle());
+
+        TopicNode topicNode = new TopicNode();
+        topicNode.setComments(canvas.getRootTopic().getComments());
+        topicNode.setId(canvas.getRootTopic().getId());
+        topicNode.setNotes(canvas.getRootTopic().getNotes());
+        topicNode.setTitle(canvas.getRootTopic().getTitle());
+        topicNode.setChildren(getChildTopicNodes(canvas.getRootTopic().getChildren().getAttached()));
+        xmindCanvas.setTopicNode(topicNode);
+        return xmindCanvas;
+    }
+
+    public static List<TopicNode> getChildTopicNodes(List<Attached> list) {
+
+        if (list == null && list.size() == 0) {
+            return new LinkedList<>();
+        }
+        List<TopicNode> topicNodes = new LinkedList<>();
+        for (Attached attached : list) {
+            if (attached.getChildren()!=null&&attached.getChildren().getAttached().size() > 0) {
+                TopicNode topicNode = new TopicNode();
+                topicNode.setComments(attached.getComments());
+                topicNode.setId(attached.getId());
+                topicNode.setNotes(attached.getNotes());
+                topicNode.setTitle(attached.getTitle());
+                topicNode.setChildren(getChildTopicNodes(attached.getChildren().getAttached()));
+                topicNodes.add(topicNode);
+            }
+        }
+        return topicNodes;
     }
 
     public static Canvas parseCanvas(String xmindFile) throws IOException, ArchiveException, DocumentException {
@@ -96,7 +134,7 @@ public class XmindParser {
      * @return
      */
     public static String getXmindZenContent(String xmindFile) throws IOException, ArchiveException {
-        List<String> keys = new ArrayList<>();
+        List<String> keys = new LinkedList<>();
         keys.add(xmindZenJson);
         Map<String, String> map = ZipUtils.getContents(keys, xmindFile);
         String content = map.get(xmindZenJson);
@@ -109,7 +147,7 @@ public class XmindParser {
      * @return
      */
     public static String getXmindLegacyContent(String xmindFile) throws IOException, ArchiveException, DocumentException {
-        List<String> keys = new ArrayList<>();
+        List<String> keys = new LinkedList<>();
         keys.add(xmindLegacyContent);
         keys.add(xmindLegacyComments);
         Map<String, String> map = ZipUtils.getContents(keys, xmindFile);
