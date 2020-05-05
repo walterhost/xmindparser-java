@@ -1,7 +1,6 @@
 package org.liufree.xmindparser;
 
 import com.alibaba.fastjson.JSON;
-import com.sun.deploy.util.StringUtils;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.dom4j.DocumentException;
 import org.liufree.xmindparser.pojo.Attached;
