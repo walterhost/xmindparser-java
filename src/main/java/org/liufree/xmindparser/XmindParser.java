@@ -86,16 +86,17 @@ public class XmindParser {
         }
         List<TopicNode> topicNodes = new ArrayList<>();
         for (Attached attached : list) {
+            TopicNode topicNode = new TopicNode();
+            topicNode.setComments(attached.getComments());
+            topicNode.setId(attached.getId());
+            topicNode.setNotes(attached.getNotes());
+            topicNode.setTitle(attached.getTitle());
+            topicNode.setParentId(parentId);
             if (attached.getChildren() != null && attached.getChildren().getAttached().size() > 0) {
-                TopicNode topicNode = new TopicNode();
-                topicNode.setComments(attached.getComments());
-                topicNode.setId(attached.getId());
-                topicNode.setNotes(attached.getNotes());
-                topicNode.setTitle(attached.getTitle());
-                topicNode.setParentId(parentId);
                 topicNode.setSubElements(getChildTopicNodes(attached.getChildren().getAttached(), topicNode.getId()));
-                topicNodes.add(topicNode);
             }
+            topicNodes.add(topicNode);
+
         }
         return topicNodes;
     }
