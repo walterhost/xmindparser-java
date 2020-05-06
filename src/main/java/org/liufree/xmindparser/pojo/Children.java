@@ -4,6 +4,7 @@
 package org.liufree.xmindparser.pojo;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,7 +16,7 @@ import java.util.List;
 @Data
 public class Children {
 
-    private List<Attached> attached;
+    private List<Attached> attached = new ArrayList<>();
 
 
 }

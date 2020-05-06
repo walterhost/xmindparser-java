@@ -5,8 +5,9 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.dom4j.DocumentException;
 import org.liufree.xmindparser.pojo.Attached;
 import org.liufree.xmindparser.pojo.Canvas;
-import org.liufree.xmindparser.pojo.tree.TopicNode;
-import org.liufree.xmindparser.pojo.tree.XmindCanvas;
+import org.liufree.xmindparser.pojo.topic.TopicNode;
+import org.liufree.xmindparser.pojo.topic.XmindCanvas;
+import org.liufree.xmindparser.tree.Builder;
 
 import java.io.File;
 import java.io.IOException;
@@ -64,23 +65,22 @@ public class XmindParser {
         topicNode.setComments(canvas.getRootTopic().getComments());
         topicNode.setId(canvas.getRootTopic().getId());
         topicNode.setNotes(canvas.getRootTopic().getNotes());
-        topicNode.setTitle(canvas.getRootTopic().getTitle());
-
+        topicNode.setName(canvas.getRootTopic().getTitle());
+        topicNode.setParentId(Builder.ROOT_NODE_ID);
         List<TopicNode> topicNodeArrayList = new ArrayList<>();
         result.add(topicNode);
 
         List<Attached> list = canvas.getRootTopic().getChildren().getAttached();
         if (list != null && list.size() > 0) {
-            topicNodeArrayList = getChildTopicNodes(list, topicNode.getId());
-            topicNode.setSubElements(topicNodeArrayList);
+            topicNodeArrayList = fillParentId(list, topicNode.getId());
         }
         result.addAll(topicNodeArrayList);
-        xmindCanvas.setTopicNodes(result);
+        List<TopicNode> topicNodeTree = (List<TopicNode>) Builder.buildTree(result);
+        xmindCanvas.setTopicNodes(topicNodeTree);
         return xmindCanvas;
     }
 
-    public static List<TopicNode> getChildTopicNodes(List<Attached> list, String parentId) {
-
+    private static List<TopicNode> fillParentId(List<Attached> list, String id) {
         if (list == null && list.size() == 0) {
             return new ArrayList<>();
         }
@@ -90,16 +90,17 @@ public class XmindParser {
             topicNode.setComments(attached.getComments());
             topicNode.setId(attached.getId());
             topicNode.setNotes(attached.getNotes());
-            topicNode.setTitle(attached.getTitle());
-            topicNode.setParentId(parentId);
+            topicNode.setName(attached.getTitle());
+            topicNode.setParentId(id);
             if (attached.getChildren() != null && attached.getChildren().getAttached().size() > 0) {
-                topicNode.setSubElements(getChildTopicNodes(attached.getChildren().getAttached(), topicNode.getId()));
+                topicNodes.addAll(fillParentId(attached.getChildren().getAttached(), topicNode.getId()));
             }
             topicNodes.add(topicNode);
 
         }
         return topicNodes;
     }
+
 
     public static Map<String, List<TopicNode>> groupByParentId(List<TopicNode> sources) {
         Map<String, List<TopicNode>> listGroupby = sources.parallelStream().collect(Collectors.groupingBy(TopicNode::getParentId));
