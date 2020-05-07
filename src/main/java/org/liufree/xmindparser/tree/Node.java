@@ -3,7 +3,6 @@
  */
 package org.liufree.xmindparser.tree;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -12,7 +11,7 @@ import java.util.List;
  *
  * @author XuyuanWang
  */
-public class Node implements Comparable<Node> {
+public class Node extends ToString implements Comparable<Node> {
 
     /**
      * ID
